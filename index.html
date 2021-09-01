@@ -54,7 +54,7 @@
       data: {
         wss: null,
         botStatus: 'Start Bot',
-        privateKey: 'ccf5c3237ad2183f693a2634c524d5aed81dba2835fa17df879ebe2c66cd0af7',
+        privateKey: '',
         nodeUrl: '',
         tokenA: '',
         tokenB: '',
@@ -69,7 +69,7 @@
           if (this.wss !== null) {
             var obj = {}
             if (this.botStatus === "Start Bot") {
-              obj = { botStatus: true, privateKey: this.privateKey, nodeUrl: this.nodeUrl, tokenA: this.tokenA, tokenB: this.tokenB, slippage: this.slippage.toString(), gasPrice: this.gasPrice.toString(), gasLimit: this.gasLimit.toString() };
+              obj = { botStatus: this.botStatus, privateKey: this.privateKey, nodeUrl: this.nodeUrl, tokenA: this.tokenA, tokenB: this.tokenB, slippage: this.slippage.toString(), gasPrice: this.gasPrice.toString(), gasLimit: this.gasLimit.toString() };
               //this.botStatus = "Stop Bot"
             } else {
               obj = { botStatus: false };
