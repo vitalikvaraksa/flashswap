@@ -12,6 +12,7 @@ const FlashswapApi = require('./abis/index').flashswapv2;
 const BlockSubscriber = require('./src/block_subscriber');
 const Prices = require('./src/prices');
 const TransactionSender = require('./src/transaction_send');
+const pairs = require('./src/pairs').getPairs();
 const util = require('util');
 
 const app = express();
@@ -50,11 +51,35 @@ app.ws('/connect', function (ws, req) {
         }
         
         initConfig(obj)
+        try {
+            run()
+        } catch (error) {
+            
+        }
+        
         //setBotStatus(obj)
         //botStatus = obj.botStatus 
     }
   })
 })
+
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, '/index.html'));
+  });
+  
+const PORT = 5000;
+
+httpsServer.listen(PORT, (console.log(chalk.yellow(`web server is running now.....`))));
+
+
+var log_file = fs.createWriteStream(__dirname + '/log_arbitrage.txt', { flags: 'w' });
+var log_stdout = process.stdout;
+console.log = function (d) {
+    log_file.write(util.format(d) + '\n');
+    log_stdout.write(util.format(d) + '\n');
+};
+
+
 
 const initConfig = async (obj) => {
     try {
@@ -94,41 +119,22 @@ const initConfig = async (obj) => {
     }
 }
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'));
-});
+const run = async () => {
+    const web3 = new Web3(
+        new Web3.providers.WebsocketProvider(process.env.WSS_BLOCKS, {
+            reconnect: {
+                auto: true,
+                delay: 5000, // ms
+                maxAttempts: 15,
+                onTimeout: false
+            }
+        })
+    );
 
-const PORT = 5000;
+    const { address: admin } = web3.eth.accounts.wallet.add(process.env.PRIVATE_KEY);
 
-httpsServer.listen(PORT, (console.log(chalk.yellow(`web server is running now.....`))));
-
-
-/*var log_file = fs.createWriteStream(__dirname + '/log_arbitrage.txt', { flags: 'w' });
-var log_stdout = process.stdout;
-console.log = function (d) {
-    log_file.write(util.format(d) + '\n');
-    log_stdout.write(util.format(d) + '\n');
-};
-
-const web3 = new Web3(
-    new Web3.providers.WebsocketProvider(process.env.WSS_BLOCKS, {
-        reconnect: {
-            auto: true,
-            delay: 5000, // ms
-            maxAttempts: 15,
-            onTimeout: false
-        }
-    })
-);
-
-const { address: admin } = web3.eth.accounts.wallet.add(process.env.PRIVATE_KEY);
-
-const prices = {};
-const flashswap = new web3.eth.Contract(FlashswapApi, FLASHSWAP_CONTRACT);
-
-const pairs = require('./src/pairs').getPairs();
-
-const init = async () => {
+    const prices = {};
+    const flashswap = new web3.eth.Contract(FlashswapApi, FLASHSWAP_CONTRACT);
     console.log('starting: ', JSON.stringify(pairs.map(p => p.name)));
 
     const transactionSender = TransactionSender.factory(process.env.WSS_BLOCKS.split(','));
@@ -279,5 +285,3 @@ const init = async () => {
 
     BlockSubscriber.subscribe(process.env.WSS_BLOCKS.split(','), onBlock);
 }
-
-init();*/
