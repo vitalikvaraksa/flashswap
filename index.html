@@ -15,6 +15,8 @@
 
 <body>
   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
   <div id="app" class="container">
     <div class="form-group">
       <label for="pwd">Private Key:</label>
@@ -71,6 +73,22 @@
       },
       methods: {
         setBotStatus() {
+          //alert(web3.utils.isAddress('slsls'))
+          if (!Web3.utils.isAddress(this.contractAddr)) {
+            alert('contract address is not valid')
+            return;
+          }
+
+          if (!Web3.utils.isAddress(this.tokenA)) {
+            alert('token A address is not valid')
+            return;
+          }
+
+          if (!Web3.utils.isAddress(this.tokenB)) {
+            alert('token B address is not valid')
+            return;
+          }
+
           if (this.wss !== null) {
             var obj = {}
             if (this.botStatus === "Start Bot") {
@@ -96,7 +114,6 @@
           wss.onmessage = (evt) => {
             var msg = evt.data
             var obj = JSON.parse(msg);
-            console.log(obj)
             if (obj.botStatus !== undefined) {
               if (obj.privateKey)
                 this.privateKey = obj.privateKey
