@@ -21,6 +21,10 @@
       <input type="password" v-model="privateKey" id="pwd">
     </div>
     <div class="form-group">
+      <label for="pwd">Contract:</label>
+      <input class="medium-input" v-model="contractAddr">
+    </div>
+    <div class="form-group">
       <label for="pwd">Node url:</label>
       <input class="medium-input" v-model="nodeUrl">
     </div>
@@ -55,6 +59,7 @@
         wss: null,
         botStatus: 'Start Bot',
         privateKey: '',
+        contractAddr: '',
         nodeUrl: '',
         tokenA: '',
         tokenB: '',
@@ -69,7 +74,7 @@
           if (this.wss !== null) {
             var obj = {}
             if (this.botStatus === "Start Bot") {
-              obj = { botStatus: this.botStatus, privateKey: this.privateKey, nodeUrl: this.nodeUrl, tokenA: this.tokenA, tokenB: this.tokenB, slippage: this.slippage.toString(), gasPrice: this.gasPrice.toString(), gasLimit: this.gasLimit.toString() };
+              obj = { botStatus: this.botStatus, privateKey: this.privateKey, contractAddr: this.contractAddr, nodeUrl: this.nodeUrl, tokenA: this.tokenA, tokenB: this.tokenB, slippage: this.slippage.toString(), gasPrice: this.gasPrice.toString(), gasLimit: this.gasLimit.toString() };
               //this.botStatus = "Stop Bot"
             } else {
               obj = { botStatus: false };
@@ -91,9 +96,13 @@
           wss.onmessage = (evt) => {
             var msg = evt.data
             var obj = JSON.parse(msg);
+            console.log(obj)
             if (obj.botStatus !== undefined) {
               if (obj.privateKey)
                 this.privateKey = obj.privateKey
+
+              if (obj.contractAddr)
+                this.contractAddr = obj.contractAddr
 
               if (obj.nodeUrl)
                 this.nodeUrl = obj.nodeUrl

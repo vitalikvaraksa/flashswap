@@ -32,7 +32,7 @@ app.ws('/connect', function (ws, req) {
     if (msg === "connectRequest") {
         let obj;
         try {
-            obj = { botStatus: BOT_RUNNING, privateKey: process.env.PRIVATE_KEY, nodeUrl: process.env.WSS_BLOCKS, tokenA: process.env.TOKENA, tokenB: process.env.TOKENB, slippage: process.env.SLIPPAGE, gasPrice: process.env.GASPRICE, gasLimit: process.env.GASLIMIT };
+            obj = { botStatus: BOT_RUNNING, privateKey: process.env.PRIVATE_KEY, contractAddr: process.env.CONTRACT, nodeUrl: process.env.WSS_BLOCKS, tokenA: process.env.TOKENA, tokenB: process.env.TOKENB, slippage: process.env.SLIPPAGE, gasPrice: process.env.GASPRICE, gasLimit: process.env.GASLIMIT };
             obj.botStatus =  BOT_RUNNING;
         } catch (error) {
             obj = {botStatus: BOT_RUNNING}
