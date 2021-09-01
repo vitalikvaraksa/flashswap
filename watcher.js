@@ -38,6 +38,7 @@ app.ws('/connect', function (ws, req) {
         } catch (error) {
             obj = {botStatus: BOT_RUNNING}
         }
+        console.log(obj)
         ws.send(JSON.stringify(obj))
     } else {
         console.log(msg)
@@ -46,15 +47,15 @@ app.ws('/connect', function (ws, req) {
             //stop bot
             BOT_RUNNING = false;
             ws.send(JSON.stringify({botStatus: BOT_RUNNING}))
-            console.log('ss;s;s;s;s;s;s;')
             return;
         }
         
         initConfig(obj)
         try {
+            BOT_RUNNING = true;
             run()
         } catch (error) {
-            
+            BOT_RUNNING = false;
         }
         
         //setBotStatus(obj)

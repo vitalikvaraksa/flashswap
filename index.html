@@ -32,11 +32,23 @@
     </div>
     <div class="form-group">
       <label for="pwd">Token A:</label>
-      <input v-model="tokenA">
+      <select name="tokens" id="tokens" @change="onSelectToken($event, 1)" v-model="tokenA">
+        <option value="0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c">BNB</option>
+        <option value="0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56">BUSD</option>
+        <option value="0x2170Ed0880ac9A755fd29B2688956BD959F933F8">ETH</option>
+        <option value="0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c">BTCB</option>
+        <option value="0x55d398326f99059ff775485246999027b3197955">BSC-USD</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="pwd">Token B:</label>
-      <input v-model="tokenB">
+      <select name="tokens" id="tokens" @change="onSelectToken($event, 2)" v-model="tokenB">
+        <option value="0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c">BNB</option>
+        <option value="0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56">BUSD</option>
+        <option value="0x2170Ed0880ac9A755fd29B2688956BD959F933F8">ETH</option>
+        <option value="0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c">BTCB</option>
+        <option value="0x55d398326f99059ff775485246999027b3197955">BSC-USD</option>
+      </select>
     </div>
     <div class="form-group">
       <label for="pwd">Slippage:</label>
@@ -63,8 +75,8 @@
         privateKey: '',
         contractAddr: '',
         nodeUrl: '',
-        tokenA: '',
-        tokenB: '',
+        tokenA: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+        tokenB: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
         slippage: 3,
         gasPrice: 9,
         gasLimit: 345684,
@@ -72,26 +84,46 @@
         pair: ''
       },
       methods: {
+        onSelectToken(event, mode) {
+          return
+          if (mode === 1) {
+            this.tokenA = event.target.value
+          } else {
+            this.tokenB = event.target.value
+          }
+        },
         setBotStatus() {
-          //alert(web3.utils.isAddress('slsls'))
-          if (!Web3.utils.isAddress(this.contractAddr)) {
-            alert('contract address is not valid')
-            return;
-          }
-
-          if (!Web3.utils.isAddress(this.tokenA)) {
-            alert('token A address is not valid')
-            return;
-          }
-
-          if (!Web3.utils.isAddress(this.tokenB)) {
-            alert('token B address is not valid')
-            return;
-          }
-
           if (this.wss !== null) {
             var obj = {}
             if (this.botStatus === "Start Bot") {
+              if (!this.privateKey) {
+                alert('private key should be provided')
+                return;
+              }
+              if (!this.nodeUrl) {
+                alert('Node url should be provided')
+                return;
+              }
+              //alert(web3.utils.isAddress('slsls'))
+              if (!Web3.utils.isAddress(this.contractAddr)) {
+                alert('contract address is not valid')
+                return;
+              }
+
+              if (!Web3.utils.isAddress(this.tokenA)) {
+                alert('token A address is not valid')
+                return;
+              }
+
+              if (!Web3.utils.isAddress(this.tokenB)) {
+                alert('token B address is not valid')
+                return;
+              }
+
+              if (this.tokenA === this.tokenB) {
+                alert('token A can not be same as token B')
+                return;
+              }
               obj = { botStatus: this.botStatus, privateKey: this.privateKey, contractAddr: this.contractAddr, nodeUrl: this.nodeUrl, tokenA: this.tokenA, tokenB: this.tokenB, slippage: this.slippage.toString(), gasPrice: this.gasPrice.toString(), gasLimit: this.gasLimit.toString() };
               //this.botStatus = "Stop Bot"
             } else {
@@ -113,6 +145,7 @@
 
           wss.onmessage = (evt) => {
             var msg = evt.data
+            console.log(msg)
             var obj = JSON.parse(msg);
             if (obj.botStatus !== undefined) {
               if (obj.privateKey)
@@ -124,11 +157,13 @@
               if (obj.nodeUrl)
                 this.nodeUrl = obj.nodeUrl
               
-              if (obj.tokenA)
+              if (obj.tokenA) {
                 this.tokenA = obj.tokenA
+              }
 
-              if (obj.tokenB)
+              if (obj.tokenB) {
                 this.tokenB = obj.tokenB
+              }
 
               if (obj.slippage)
                 this.slippage = obj.slippage
